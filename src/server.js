@@ -1,11 +1,11 @@
 const express = require('express')
 const app = express()
 // const allMembers = require('./allMembers')
-const insertDocuments = require('./insertDocuments')
+const family = require('./family')
 
-app.get('/', (req, res, next) => {
-    insertDocuments()
-        .then(() => res.json({ok: true}))
+app.get('/families/:familyId', ({params: {familyId}}, res, next) => {
+    family(familyId)
+        .then((result) => result ? res.json(result) : res.status(404).send(`no such family: ${familyId}`))
         .catch(next)
 })
 
