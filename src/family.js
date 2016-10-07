@@ -16,8 +16,14 @@ const resolve = ({id, children}, membersById) => {
     const member = membersById[id]
     const childrenProperty = children ? {children: resolveMembers(children, membersById)} : null
 
+    const cleanSpouseAndPartner = (member) => {
+        delete member.spouse
+        delete member.partner
+        return member
+    }
+
     const resolveProperty = (propertyName) =>
-        member[propertyName] ? {[propertyName] : membersById[member[propertyName]]} : null
+        member[propertyName] ? {[propertyName] : cleanSpouseAndPartner(membersById[member[propertyName]])} : null
 
     return Object.assign({}, member, childrenProperty, resolveProperty('spouse'), resolveProperty('partner'))
 }
@@ -27,6 +33,8 @@ const resolveMembers = (children = [], membersById) => children.map((child) => r
 const buildFamily = (rootDocument) =>
     familyMembers(memberIds(rootDocument)).then((membersById) => ({
          id: rootDocument.id,
+         name: rootDocument.name,
+         description: rootDocument.description,
          members: resolveMembers(rootDocument.members, membersById)
     }))
 
